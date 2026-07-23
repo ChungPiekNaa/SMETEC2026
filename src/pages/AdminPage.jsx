@@ -4,7 +4,7 @@ import { STATUS } from "../scheduleData";
 import ScheduleGrid from "../components/ScheduleGrid";
 import PageHeader from "../components/PageHeader";
 import ScheduleSkeleton from "../components/ScheduleSkeleton";
-import FnbNote from "../components/FnbNote";
+import FnbNote from "../components/FnBNote";
 
 function nextStatus(current) {
   const idx = STATUS.indexOf(current);
