@@ -3,7 +3,7 @@ import { subscribe } from "../lib/scheduleStore";
 import ScheduleGrid from "../components/ScheduleGrid";
 import PageHeader from "../components/PageHeader";
 import ScheduleSkeleton from "../components/ScheduleSkeleton";
-import FnbNote from "../components/FnbNote";
+import FnbNote from "../components/FnBNote";
 
 export default function PublicPage() {
   const [rows, setRows] = useState(null);
