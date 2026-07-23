@@ -4,6 +4,7 @@ import { STATUS } from "../scheduleData";
 import ScheduleGrid from "../components/ScheduleGrid";
 import PageHeader from "../components/PageHeader";
 import ScheduleSkeleton from "../components/ScheduleSkeleton";
+import FnbNote from "../components/FnbNote";
 
 function nextStatus(current) {
   const idx = STATUS.indexOf(current);
@@ -74,13 +75,16 @@ export default function AdminPage() {
           }
         />
 
-        <div style={{ padding: "8px 24px 0", fontSize: 11, color: connectionError ? "#C0392B" : "#6B7684" }}>
-          {connectionError
-            ? "Connection lost — trying to reconnect…"
-            : rows
-              ? "Click a session to move it Upcoming → Now → Ended. Attendees see it instantly."
-              : "Loading the latest schedule…"}
-          {saving ? "  Saving…" : ""}
+        <div style={{ padding: "8px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 11, color: connectionError ? "#C0392B" : "#6B7684" }}>
+            {connectionError
+              ? "Connection lost — trying to reconnect…"
+              : rows
+                ? "Click a session to move it Upcoming → Now → Ended. Attendees see it instantly."
+                : "Loading the latest schedule…"}
+            {saving ? "  Saving…" : ""}
+          </span>
+          <FnbNote />
         </div>
 
         <div style={{ padding: "12px 24px 24px" }}>

@@ -15,12 +15,6 @@ export const STATUS = ["upcoming", "now", "ended"];
 export const STATUS_LABEL = { upcoming: "Upcoming", now: "Now", ended: "Ended" };
 export const STATUS_COLOR = { upcoming: COLORS.upcoming, now: COLORS.now, ended: COLORS.ended };
 
-export const STATUS_BG = {
-  upcoming: "#DFF6F7",
-  now: "#E9F5D8",
-  ended: "#E9E9E9",
-};
-
 // Schedule column order
 export const TRACKS = ["Auditorium", "Baleh", "Baram", "Murum", "Bakun"];
 
@@ -28,8 +22,16 @@ export const TAG_LABEL = {
   E: "Electrical",
   M: "Mechanical",
   C: "Civil",
-  TO: "Technical (Others)",
+  TO: "Technical Others",
   CF: "Corporate Functions",
+};
+
+export const TAG_COLOR = {
+  E: "#cfecc4", 
+  M: "#b3cee5",  
+  C: "#fadfc2", 
+  TO: "#fbcbe0", 
+  CF: "#f8f8cc", 
 };
 
 // Every parallel block below is expressed as a start time plus a list of per-track bullet titles
@@ -63,72 +65,72 @@ const MERGED_ITEMS = [
 const MIDDAY = { id: "m-lunch", start: "12:00pm", end: "2:00pm", title: "Lunch" };
 
 const CLOSING_ITEMS = [
-  { id: "m-aivision", start: "3:00pm", end: "3:30pm", title: "AI Vision Empowered Robotic Dog for Substation Inspection & Monitoring" },
-  { id: "m-drone", start: "3:30pm", end: "4:00pm", title: "From Drone Footage to Decisions: Turning Pixels into Power" },
-  { id: "m-luckydraw", start: "4:00pm", end: "4:30pm", title: "Lucky Draw & Closing" },
+  { id: "m-aivision", start: "3:00pm", end: "3:30pm", title: "AI Vision Empowered Robotic Dog for Substation Inspection & Monitoring", tag: "TO" },
+  { id: "m-drone", start: "3:30pm", end: "4:00pm", title: "From Drone Footage to Decisions: Turning Pixels into Power", tag: "TO" },
+  { id: "m-luckydraw", start: "4:00pm", end: "5:00pm", title: "Lucky Draw & Closing" },
 ];
 
 // Parallel-track blocks
 const MORNING_BLOCK_START = "9:30am";
 const MORNING_TALKS = {
   Auditorium: [
-    "Invisible Backbone: Why Communication Protocols are Vital for Distribution Automation",
-    "Current Transformer Placement Strategies in One-and-a-Half Breaker Substations for Secure and Sustainable Transmission Systems",
-    "When Milliseconds Matter: Tackling Voltage Sags in Industrial Facilities",
-    "Outage Management Through Smart Technologies",
-    "Analysis of Sustained Oscillation at Sejingkat Coal-Fired Power Plant Based on Nonlinear Dynamical System Theory",
+    { title: "Invisible Backbone: Why Communication Protocols are Vital for Distribution Automation", tag: "E" },
+    { title: "Current Transformer Placement Strategies in One-and-a-Half Breaker Substations for Secure and Sustainable Transmission Systems", tag: "E" },
+    { title: "When Milliseconds Matter: Tackling Voltage Sags in Industrial Facilities", tag: "E" },
+    { title: "Outage Management Through Smart Technologies", tag: "E" },
+    { title: "Analysis of Sustained Oscillation at Sejingkat Coal-Fired Power Plant Based on Nonlinear Dynamical System Theory", tag: "E" },
   ],
   Baleh: [
-    "Reducing Forced Outage Due To Emission Non-Compliance Through The Installation Of Acoustic Air Horn System For ESP",
-    "From CO2 Emissions to Resource: A Circularity Approach to Capture, Utilisation, and Storage (CCUS) Using Coal Fly Ash",
-    "Assessment of Gas Turbine Primary Frequency Response Limitations During Grid Disturbances",
-    "Debris Cutter System as an Innovative Solution for Intake Clogging Issue at Sungai Kota 2 Mini Hydro, Lawas",
-    "Internal Consultancy Framework: Monetising our Mastery",
+    { title: "Reducing Forced Outage Due To Emission Non-Compliance Through The Installation Of Acoustic Air Horn System For ESP", tag: "M" },
+    { title: "From CO2 Emissions to Resource: A Circularity Approach to Capture, Utilisation, and Storage (CCUS) Using Coal Fly Ash", tag: "TO" },
+    { title: "Assessment of Gas Turbine Primary Frequency Response Limitations During Grid Disturbances", tag: "E" },
+    { title: "Debris Cutter System as an Innovative Solution for Intake Clogging Issue at Sungai Kota 2 Mini Hydro, Lawas", tag: "TO" },
+    { title: "Internal Consultancy Framework: Monetising our Mastery", tag: "E" },
   ],
   Baram: [
-    "Forensic Structural Investigation for Building Cracks at Astana 132kV Substation",
-    "Forecasting Challenges in Run-of-River Mini Hydropower Systems: Lessons from the Kota 2 Mini Hydro Project",
-    "Marudi Junction 275/132/33kV Substation Slope Stabilisation & Enhancement Works",
-    "Early Identification of Slope Instability through Preliminary Assessment: Application and Validation of a Proforma-Based Method",
-    "Principle of Explosive and It's Application",
+    { title: "Forensic Structural Investigation for Building Cracks at Astana 132kV Substation", tag: "C" },
+    { title: "Forecasting Challenges in Run-of-River Mini Hydropower Systems: Lessons from the Kota 2 Mini Hydro Project", tag: "C" },
+    { title: "Marudi Junction 275/132/33kV Substation Slope Stabilisation & Enhancement Works", tag: "C" },
+    { title: "Early Identification of Slope Instability through Preliminary Assessment: Application and Validation of a Proforma-Based Method", tag: "TO" },
+    { title: "Principle of Explosive and It's Application", tag: "C" },
   ],
   Murum: [
-    "Sarawak Energy Shared Environmental Information System (ENVIS): Transforming Environmental Data Management through Geospatial Intelligence Technology",
-    "Building a Scalable Enterprise Data Platform for a Data-Driven Utility: A Case Study in Sarawak Energy",
-    "Scheduled Waste Management at Baleh HEP - Recovery of Waste Oil as a Sensitizer for Quarry Blasting Operation",
-    "Satisfaction and Happiness Level Survey: A tool for Project Resettlement Performance and Social Impact Measurement",
-    "Application of Numerical Modelling in an Environmental Impact Assessment (EIA) for Thermal Power Plant development",
+    { title: "Sarawak Energy Shared Environmental Information System (ENVIS): Transforming Environmental Data Management through Geospatial Intelligence Technology", tag: "TO" },
+    { title: "Building a Scalable Enterprise Data Platform for a Data-Driven Utility: A Case Study in Sarawak Energy", tag: "TO" },
+    { title: "Scheduled Waste Management at Baleh HEP - Recovery of Waste Oil as a Sensitizer for Quarry Blasting Operation", tag: "TO" },
+    { title: "Satisfaction and Happiness Level Survey: A tool for Project Resettlement Performance and Social Impact Measurement", tag: "CF" },
+    { title: "Application of Numerical Modelling in an Environmental Impact Assessment (EIA) for Thermal Power Plant development", tag: "TO" },
   ],
   Bakun: [
-    "Finance Continuous Improvement: Past, Present and Future",
-    "Creating Value and Driving Innovation for the Utility Sector",
-    "Protecting Our Intellectual Property",
-    "Small Generators and Power Systems to Support the Energy Transition",
-    "Smart Robotic Systems for Utilities",
+    { title: "Finance Continuous Improvement: Past, Present and Future", tag: "CF" },
+    { title: "Creating Value and Driving Innovation for the Utility Sector", tag: "TO" },
+    { title: "Protecting Our Intellectual Property", tag: "TO" },
+    { title: "Small Generators and Power Systems to Support the Energy Transition", tag: "TO" },
+    { title: "Smart Robotic Systems for Utilities", tag: "TO" },
   ],
 };
 
 const AFTERNOON_BLOCK_START = "2:00pm";
 const AFTERNOON_TALKS = {
   Auditorium: [
-    "PI VISION and Lesson learned from Transformer Thermal Imaging PoC",
-    "STG9 Tripping Event: Analysis & Keys Take Away",
+    { title: "PI VISION and Lesson learned from Transformer Thermal Imaging PoC", tag: "M" },
+    { title: "STG9 Tripping Event: Analysis & Keys Take Away", tag: "M" },
   ],
   Baleh: [
-    "Into the Realms of Microseconds with Real-Time Digital Simulator (RTDS)",
-    "Impacting SAIDI & SAIFI: Exploring Single-Phase Cutout Reclosers in Rural Feeder Application",
+    { title: "Into the Realms of Microseconds with Real-Time Digital Simulator (RTDS)", tag: "E" },
+    { title: "Impacting SAIDI & SAIFI: Exploring Single-Phase Cutout Reclosers in Rural Feeder Application", tag: "E" },
   ],
   Baram: [
-    "Multi-Criteria Evaluation of 34 CMIP6 Global Climate Models and Statistical Downscaling for Precipitation Projection in the Bakun Hydropower Basin, Sarawak, Malaysia",
-    "Fire Suppression System for Substation Application",
+    { title: "Multi-Criteria Evaluation of 34 CMIP6 Global Climate Models and Statistical Downscaling for Precipitation Projection in the Bakun Hydropower Basin, Sarawak, Malaysia", tag: "C" },
+    { title: "Fire Suppression System for Substation Application", tag: "E" },
   ],
   Murum: [
-    "From Principles to Practice: Free, Prior, and Informed Consent (FPIC) Implementation Insights from Sarawak Energy's International Project (Indonesia)",
-    "Machine Learning Empowered Electronic Nose for Transformer Oil Rapid Analysis",
+    { title: "From Principles to Practice: Free, Prior, and Informed Consent (FPIC) Implementation Insights from Sarawak Energy's International Project (Indonesia)", tag: "CF" },
+    { title: "Machine Learning Empowered Electronic Nose for Transformer Oil Rapid Analysis", tag: "TO" },
   ],
   Bakun: [
-    "Advancing Environmental Sciences in Power Utilities",
-    "Laboratory Services in Supporting Asset Health Monitoring",
+    { title: "Advancing Environmental Sciences in Power Utilities", tag: "TO" },
+    { title: "Laboratory Services in Supporting Asset Health Monitoring", tag: "TO" },
   ],
 };
 
@@ -142,8 +144,8 @@ function buildParallelBlock(blockId, startLabel, talksByTrack) {
     const rowEnd = rowStart + 30;
     const tracks = {};
     TRACKS.forEach((track) => {
-      const title = (talksByTrack[track] || [])[i];
-      if (title) tracks[track] = { title, status: "upcoming" };
+      const talk = (talksByTrack[track] || [])[i];
+      if (talk) tracks[track] = { title: talk.title, tag: talk.tag, status: "upcoming" };
     });
     rows.push({
       id: `${blockId}-r${i}`,

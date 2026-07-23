@@ -1,5 +1,5 @@
 import React from "react";
-import { COLORS, STATUS, STATUS_LABEL, STATUS_COLOR, TAG_LABEL } from "../scheduleData";
+import { COLORS, STATUS, STATUS_LABEL, STATUS_COLOR, TAG_LABEL, TAG_COLOR } from "../scheduleData";
 
 export default function LegendPanel() {
   return (
@@ -8,12 +8,12 @@ export default function LegendPanel() {
         <div style={{ background: COLORS.panelGrey, color: "#fff", padding: "7px 14px", fontWeight: 700, fontSize: 13 }}>
           Legend
         </div>
-        <div style={{ padding: "8px 14px", display: "grid", gridTemplateColumns: "26px 1fr", rowGap: 3, fontSize: 12.5 }}>
+        <div style={{ padding: "8px 14px", display: "flex", flexDirection: "column", gap: 6 }}>
           {Object.entries(TAG_LABEL).map(([k, v]) => (
-            <React.Fragment key={k}>
-              <div style={{ fontWeight: 700 }}>{k}</div>
-              <div style={{ color: COLORS.ink }}>{v}</div>
-            </React.Fragment>
+            <div key={k} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
+              <span style={{ width: 16, height: 16, background: TAG_COLOR[k], display: "inline-block", border: "1px solid rgba(0,0,0,0.15)", flexShrink: 0 }} />
+              {v}
+            </div>
           ))}
         </div>
       </div>
@@ -25,7 +25,7 @@ export default function LegendPanel() {
         <div style={{ padding: "8px 14px", display: "flex", flexDirection: "column", gap: 6 }}>
           {STATUS.map((s) => (
             <div key={s} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-              <span style={{ width: 16, height: 16, background: STATUS_COLOR[s], display: "inline-block", border: "1px solid rgba(0,0,0,0.15)" }} />
+              <span style={{ width: 16, height: 16, background: STATUS_COLOR[s], display: "inline-block", border: "1px solid rgba(0,0,0,0.15)", flexShrink: 0 }} />
               {STATUS_LABEL[s]}
             </div>
           ))}

@@ -1,5 +1,5 @@
 import React from "react";
-import { COLORS, STATUS_LABEL, STATUS_COLOR, STATUS_BG, TRACKS } from "../scheduleData";
+import { COLORS, STATUS_LABEL, STATUS_COLOR, TAG_COLOR, TRACKS } from "../scheduleData";
 
 export default function ScheduleGrid({ rows, onCellClick }) {
   const clickable = typeof onCellClick === "function";
@@ -27,7 +27,7 @@ export default function ScheduleGrid({ rows, onCellClick }) {
               <tr key={row.id}>
                 <td style={tdTimeStyle}>{row.start}</td>
                 <td style={tdTimeStyle}>{row.end}</td>
-                <td colSpan={TRACKS.length} style={{ ...tdStyle, padding: 0 }}>
+                <td colSpan={TRACKS.length} style={{ ...tdStyle, padding: 0, background: row.tag ? TAG_COLOR[row.tag] : "#ffffff" }}>
                   <StatusCell
                     title={row.title}
                     status={row.status}
@@ -45,14 +45,7 @@ export default function ScheduleGrid({ rows, onCellClick }) {
                   const cell = row.tracks[track];
                   if (!cell) return <td key={track} style={{ ...tdStyle, background: "#fff" }}></td>;
                   return (
-                    <td
-                    style={{
-                      ...tdStyle,
-                      padding: 0,
-                      background: STATUS_BG[cell.status],
-                      borderLeft: `5px solid ${STATUS_COLOR[cell.status]}`,
-                    }}
-                    >
+                    <td key={track} style={{ ...tdStyle, padding: 0, background: cell.tag ? TAG_COLOR[cell.tag] : "#ffffff" }}>
                       <StatusCell
                         title={cell.title}
                         status={cell.status}
@@ -73,19 +66,18 @@ export default function ScheduleGrid({ rows, onCellClick }) {
 
 function StatusCell({ title, status, clickable, onClick, align }) {
   const barColor = STATUS_COLOR[status];
-  const bg = STATUS_BG[status];
-
   return (
     <div
       onClick={onClick}
       style={{
         position: "relative",
         height: "100%",
+        width: "100%",
         minHeight: 64,
         boxSizing: "border-box",
         padding: align === "center" ? "12px 18px" : "12px 14px 34px 18px",
         cursor: clickable ? "pointer" : "default",
-        background: bg,
+        background: "transparent",
         display: "flex",
         flexDirection: "column",
         justifyContent: align === "center" ? "center" : "flex-start",

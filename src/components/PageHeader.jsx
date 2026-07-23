@@ -15,15 +15,15 @@ export default function PageHeader({ now, badge }) {
       }}
     >
       <div style={{ minWidth: 260 }}>
-        <div style={{ fontSize: 40, fontWeight: 800, letterSpacing: 0.5, lineHeight: 1, color: "#1B5FA8" }}>
-          SMETEC 2026
-          {badge}
-        </div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: "#1F2933", marginTop: 8 }}>
-          Sarawak Energy SME Technical Conference
-        </div>
-        <div style={{ fontSize: 12.5, color: "#6B7684", marginTop: 2 }}>
-          Empowering Innovation: Driving the Future of Sustainable Energy
+        <div style={{ position: "relative", display: "inline-block" }}>
+          <img
+            src="/smetec2026.png"
+            alt="SMETEC 2026 — Sarawak Energy SME Technical Conference — Empowering Innovation: Driving the Future of Sustainable Energy"
+            style={{ display: "block", maxHeight: 220, width: "auto" }}
+          />
+          {badge && (
+            <span style={{ position: "absolute", top: -6, right: -70 }}>{badge}</span>
+          )}
         </div>
         <div style={{ fontSize: 11, color: "#6B7684", marginTop: 14 }}>
           Now
