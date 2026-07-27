@@ -1,6 +1,7 @@
 // Design tokens
 export const COLORS = {
   headerBlue: "#1B7FBF",
+  headerTeal: "#2FC4CE",
   ink: "#1F2933",
   subtle: "#6B7684",
   hairline: "#111111",
@@ -8,12 +9,29 @@ export const COLORS = {
   now: "#8DC63F",
   ended: "#D9D9D9",
   panelGrey: "#5A6470",
-  mergedBg: "#F5F6F7",
+  mergedBg: "#FFFFFF",
+  pageBg: "#F4F6F9",
+  cardBg: "#FFFFFF",
 };
+
+// New gradient / glass tokens for the "Gradient hero + glass" look.
+// Nothing above this line changed in meaning — only mergedBg's hex value
+// was updated (it was previously unused) and pageBg/cardBg were added.
+export const GRADIENT = `linear-gradient(135deg, ${COLORS.headerBlue}, ${COLORS.headerTeal})`;
+export const CARD_SHADOW = "0 1px 4px rgba(16,24,40,0.06)";
+export const CARD_SHADOW_LG = "0 8px 24px rgba(27,127,191,0.16)";
+export const PILL_SHADOW = "0 2px 6px rgba(16,24,40,0.10)";
 
 export const STATUS = ["upcoming", "now", "ended"];
 export const STATUS_LABEL = { upcoming: "Upcoming", now: "Now", ended: "Ended" };
 export const STATUS_COLOR = { upcoming: COLORS.upcoming, now: COLORS.now, ended: COLORS.ended };
+
+// Soft tinted pill styling for status badges in the new UI
+export const STATUS_STYLE = {
+  upcoming: { bg: "#E7F6F8", fg: "#0F8A9C" },
+  now: { bg: "#DFF3CB", fg: "#4C7A1E" },
+  ended: { bg: "#EEF1F3", fg: "#6B7684" },
+};
 
 // Schedule column order
 export const TRACKS = ["Auditorium", "Baleh", "Baram", "Murum", "Bakun"];
@@ -27,11 +45,11 @@ export const TAG_LABEL = {
 };
 
 export const TAG_COLOR = {
-  E: "#cfecc4", 
+  E: "#83d166", 
   M: "#b3cee5",  
   C: "#fadfc2", 
   TO: "#fbcbe0", 
-  CF: "#f8f8cc", 
+  CF: "#ffff00", 
 };
 
 // Every parallel block below is expressed as a start time plus a list of per-track bullet titles
@@ -62,7 +80,7 @@ const MERGED_ITEMS = [
   { id: "m-photo", start: "9:15am", end: "9:30am", title: "Group Photo" },
 ];
 
-const MIDDAY = { id: "m-lunch", start: "12:00pm", end: "2:00pm", title: "Lunch" };
+const MIDDAY = { id: "m-lunch", start: "12:00pm", end: "2:00pm", title: "Lunch at Batang Ai room" };
 
 const CLOSING_ITEMS = [
   { id: "m-aivision", start: "3:00pm", end: "3:30pm", title: "AI Vision Empowered Robotic Dog for Substation Inspection & Monitoring", tag: "TO" },
@@ -133,6 +151,42 @@ const AFTERNOON_TALKS = {
     { title: "Laboratory Services in Supporting Asset Health Monitoring", tag: "TO" },
   ],
 };
+
+const ANNOUNCEMENT_PREFIX = "Please assemble at the Auditorium for";
+
+export const ANNOUNCEMENT_CONFIG = {
+  "m-arrival": { icon: "arrival", accent: COLORS.upcoming },
+  "m-briefing": { icon: "briefing", accent: COLORS.headerBlue },
+  "m-photo": { icon: "photo", accent: COLORS.panelGrey },
+  "m-aivision": { icon: "aivision", accent: COLORS.headerBlue },
+  "m-drone": { icon: "drone", accent: COLORS.headerBlue },
+  "m-luckydraw": { icon: "luckydraw", accent: COLORS.now },
+};
+
+export function getActiveAnnouncement(now) {
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const candidates = [...MERGED_ITEMS, ...CLOSING_ITEMS];
+
+  for (const item of candidates) {
+    const cfg = ANNOUNCEMENT_CONFIG[item.id];
+    if (!cfg) continue;
+
+    const startMin = toMinutes(item.start);
+    const endMin = toMinutes(item.end);
+    if (nowMin >= startMin && nowMin < endMin) {
+      return {
+        id: item.id,
+        title: item.title,
+        start: item.start,
+        end: item.end,
+        icon: cfg.icon,
+        accent: cfg.accent,
+        message: `${ANNOUNCEMENT_PREFIX} ${item.title}`,
+      };
+    }
+  }
+  return null;
+}
 
 // Builds one "parallel" row per 30-minute increment for a block of talks
 function buildParallelBlock(blockId, startLabel, talksByTrack) {

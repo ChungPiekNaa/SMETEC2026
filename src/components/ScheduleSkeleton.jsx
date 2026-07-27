@@ -1,11 +1,12 @@
 import React from "react";
-import { COLORS, TRACKS } from "../scheduleData";
+import { COLORS, GRADIENT, CARD_SHADOW, CARD_SHADOW_LG, TRACKS } from "../scheduleData";
 
 const shimmer = "smetec-skeleton-shimmer";
+const GRID_TEMPLATE = `90px 90px repeat(${TRACKS.length}, 1fr)`;
 
-export default function ScheduleSkeleton() {
+export default function ScheduleSkeleton({ stickyTop = 0 }) {
   return (
-    <div style={{ overflowX: "auto" }}>
+    <div role="table" style={{ minWidth: 1100, borderRadius: 16, boxShadow: CARD_SHADOW_LG, background: COLORS.pageBg }}>
       <style>{`
         @keyframes ${shimmer} {
           0% { background-position: -400px 0; }
@@ -17,45 +18,57 @@ export default function ScheduleSkeleton() {
           animation: ${shimmer} 1.3s ease-in-out infinite;
         }
       `}</style>
-      <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 1100, tableLayout: "fixed" }}>
-        <thead>
-          <tr>
-            <th style={thStyle}>Time Start</th>
-            <th style={thStyle}>Time End</th>
-            {TRACKS.map((t) => <th key={t} style={thStyle}>{t}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <tr key={i}>
-              <td style={tdStyle}><div className={shimmer} style={{ height: 14, width: 50, borderRadius: 3 }} /></td>
-              <td style={tdStyle}><div className={shimmer} style={{ height: 14, width: 50, borderRadius: 3 }} /></td>
-              {TRACKS.map((t) => (
-                <td key={t} style={{ ...tdStyle, height: 64 }}>
-                  <div className={shimmer} style={{ height: 12, width: "90%", borderRadius: 3, marginBottom: 6 }} />
-                  <div className={shimmer} style={{ height: 12, width: "60%", borderRadius: 3 }} />
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+
+      <div
+        role="row"
+        style={{
+          display: "grid",
+          gridTemplateColumns: GRID_TEMPLATE,
+          position: "sticky",
+          top: stickyTop,
+          zIndex: 15,
+          background: GRADIENT,
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+        }}
+      >
+        <div role="columnheader" style={thStyle}>Time Start</div>
+        <div role="columnheader" style={thStyle}>Time End</div>
+        {TRACKS.map((t) => <div key={t} role="columnheader" style={thStyle}>{t}</div>)}
+      </div>
+
+      <div style={{ padding: 6, borderBottomLeftRadius: 16, borderBottomRightRadius: 16, overflow: "hidden" }}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} role="row" style={{ display: "grid", gridTemplateColumns: GRID_TEMPLATE, gap: 6, marginBottom: 6 }}>
+            <div role="cell" style={{ ...tdStyle, background: "transparent", boxShadow: "none" }}><div className={shimmer} style={{ height: 14, width: 50, borderRadius: 3 }} /></div>
+            <div role="cell" style={{ ...tdStyle, background: "transparent", boxShadow: "none" }}><div className={shimmer} style={{ height: 14, width: 50, borderRadius: 3 }} /></div>
+            {TRACKS.map((t) => (
+              <div key={t} role="cell" style={{ ...tdStyle, height: 64 }}>
+                <div className={shimmer} style={{ height: 12, width: "90%", borderRadius: 3, marginBottom: 6 }} />
+                <div className={shimmer} style={{ height: 12, width: "60%", borderRadius: 3 }} />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
 const thStyle = {
-  background: COLORS.headerBlue,
   color: "#fff",
   textAlign: "left",
   fontSize: 13,
   fontWeight: 700,
-  padding: "10px 14px",
-  borderBottom: `2px solid ${COLORS.hairline}`,
+  padding: "12px 14px",
+  boxSizing: "border-box",
 };
 
 const tdStyle = {
-  border: "1px solid #ddd",
-  verticalAlign: "top",
+  background: COLORS.cardBg,
+  borderRadius: 12,
+  boxShadow: CARD_SHADOW,
+  boxSizing: "border-box",
   padding: "12px 14px",
+  overflow: "hidden",
 };
