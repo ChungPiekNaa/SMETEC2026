@@ -14,9 +14,6 @@ export const COLORS = {
   cardBg: "#FFFFFF",
 };
 
-// New gradient / glass tokens for the "Gradient hero + glass" look.
-// Nothing above this line changed in meaning — only mergedBg's hex value
-// was updated (it was previously unused) and pageBg/cardBg were added.
 export const GRADIENT = `linear-gradient(135deg, ${COLORS.headerBlue}, ${COLORS.headerTeal})`;
 export const CARD_SHADOW = "0 1px 4px rgba(16,24,40,0.06)";
 export const CARD_SHADOW_LG = "0 8px 24px rgba(27,127,191,0.16)";
@@ -26,11 +23,10 @@ export const STATUS = ["upcoming", "now", "ended"];
 export const STATUS_LABEL = { upcoming: "Upcoming", now: "Now", ended: "Ended" };
 export const STATUS_COLOR = { upcoming: COLORS.upcoming, now: COLORS.now, ended: COLORS.ended };
 
-// Soft tinted pill styling for status badges in the new UI
 export const STATUS_STYLE = {
   upcoming: { bg: "#E7F6F8", fg: "#0F8A9C" },
   now: { bg: "#DFF3CB", fg: "#4C7A1E" },
-  ended: { bg: "#EEF1F3", fg: "#6B7684" },
+  ended: { bg: "#ffdfdf", fg: "#fd0000" },
 };
 
 // Schedule column order
