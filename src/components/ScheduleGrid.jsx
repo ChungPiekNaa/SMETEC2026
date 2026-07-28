@@ -48,6 +48,7 @@ export default function ScheduleGrid({ rows, onCellClick, stickyTop = 0 }) {
                   ...tdStyle,
                   gridColumn: `3 / span ${TRACKS.length}`,
                   background: row.tag ? TAG_COLOR[row.tag] : COLORS.mergedBg,
+                  filter: row.status === "ended" ? "grayscale(0.75) opacity(0.6)" : "none",
                 }}
               >
                 <StatusCell
@@ -67,7 +68,15 @@ export default function ScheduleGrid({ rows, onCellClick, stickyTop = 0 }) {
                 const cell = row.tracks[track];
                 if (!cell) return <div key={track} role="cell" style={{ ...tdStyle, background: "transparent", boxShadow: "none" }} />;
                 return (
-                  <div key={track} role="cell" style={{ ...tdStyle, background: cell.tag ? TAG_COLOR[cell.tag] : COLORS.cardBg }}>
+                  <div
+                    key={track}
+                    role="cell"
+                    style={{
+                      ...tdStyle,
+                      background: cell.tag ? TAG_COLOR[cell.tag] : COLORS.cardBg,
+                      filter: cell.status === "ended" ? "grayscale(0.75) opacity(0.6)" : "none",
+                    }}
+                  >
                     <StatusCell
                       title={cell.title}
                       status={cell.status}

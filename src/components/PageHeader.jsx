@@ -59,6 +59,7 @@ export default function PageHeader({ now, badge }) {
         .smetec-ph-right {
           flex: 2 1 300px;
           max-width: 620px;
+          margin-left: auto;
           display: flex;
           flex-direction: column;
           gap: clamp(6px, 1.5vw, 10px);

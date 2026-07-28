@@ -26,7 +26,7 @@ export const STATUS_COLOR = { upcoming: COLORS.upcoming, now: COLORS.now, ended:
 export const STATUS_STYLE = {
   upcoming: { bg: "#E7F6F8", fg: "#0F8A9C" },
   now: { bg: "#DFF3CB", fg: "#4C7A1E" },
-  ended: { bg: "#ffdfdf", fg: "#fd0000" },
+  ended: { bg: "#EEF1F3", fg: "#6B7684" },
 };
 
 // Schedule column order
