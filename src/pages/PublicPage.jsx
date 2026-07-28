@@ -89,7 +89,7 @@ export default function PublicPage() {
           className="smetec-page-scroll"
           onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 2)}
         >
-          {rows ? <ScheduleGrid rows={rows} stickyTop={0} /> : <ScheduleSkeleton stickyTop={0} />}
+          {rows ? <ScheduleGrid rows={rows} now={now} stickyTop={0} /> : <ScheduleSkeleton stickyTop={0} />}
         </div>
       </div>
     </div>

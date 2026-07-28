@@ -1,10 +1,19 @@
 import React from "react";
-import { COLORS, GRADIENT, CARD_SHADOW, CARD_SHADOW_LG, STATUS_STYLE, TAG_COLOR, TRACKS } from "../scheduleData";
+import { COLORS, GRADIENT, CARD_SHADOW, CARD_SHADOW_LG, STATUS_STYLE, TAG_COLOR, TRACKS, toMinutes } from "../scheduleData";
 
 const GRID_TEMPLATE = `90px 90px repeat(${TRACKS.length}, 1fr)`;
 
-export default function ScheduleGrid({ rows, onCellClick, stickyTop = 0 }) {
+export default function ScheduleGrid({ rows, onCellClick, now, stickyTop = 0 }) {
   const clickable = typeof onCellClick === "function";
+  const nowMin = now ? now.getHours() * 60 + now.getMinutes() : null;
+
+  function isCurrentRow(row) {
+    if (nowMin == null) return false;
+    const startMin = toMinutes(row.start);
+    let endMin = toMinutes(row.end);
+    if (endMin <= startMin) endMin += 24 * 60;
+    return nowMin >= startMin && nowMin < endMin;
+  }
 
   return (
     <div
@@ -16,6 +25,12 @@ export default function ScheduleGrid({ rows, onCellClick, stickyTop = 0 }) {
         background: COLORS.pageBg,
       }}
     >
+      <style>{`
+        @keyframes smetec-row-glow {
+          0%, 100% { box-shadow: 0 0 0 0 ${COLORS.nowRowGlow}55; transform: scale(1); }
+          50% { box-shadow: 0 0 26px 6px ${COLORS.nowRowGlow}55; transform: scale(1.008); }
+        }
+      `}</style>
       <div
         role="row"
         style={{
@@ -37,59 +52,82 @@ export default function ScheduleGrid({ rows, onCellClick, stickyTop = 0 }) {
       </div>
 
       <div style={{ padding: 6, borderBottomLeftRadius: 16, borderBottomRightRadius: 16, overflow: "hidden" }}>
-        {rows.map((row) =>
-          row.type === "merged" ? (
-            <div key={row.id} role="row" style={{ display: "grid", gridTemplateColumns: GRID_TEMPLATE, gap: 6, marginBottom: 6, position: "relative", zIndex: 0, isolation: "isolate" }}>
-              <div role="cell" style={tdTimeStyle}>{row.start}</div>
-              <div role="cell" style={tdTimeStyle}>{row.end}</div>
-              <div
-                role="cell"
-                style={{
-                  ...tdStyle,
-                  gridColumn: `3 / span ${TRACKS.length}`,
-                  background: row.tag ? TAG_COLOR[row.tag] : COLORS.mergedBg,
-                  filter: row.status === "ended" ? "grayscale(0.75) opacity(0.6)" : "none",
-                }}
-              >
-                <StatusCell
-                  title={row.title}
-                  status={row.status}
-                  clickable={clickable}
-                  onClick={clickable ? () => onCellClick(row.id) : undefined}
-                  align="center"
-                />
-              </div>
-            </div>
-          ) : (
-            <div key={row.id} role="row" style={{ display: "grid", gridTemplateColumns: GRID_TEMPLATE, gap: 6, marginBottom: 6, position: "relative", zIndex: 0, isolation: "isolate" }}>
-              <div role="cell" style={tdTimeStyle}>{row.start}</div>
-              <div role="cell" style={tdTimeStyle}>{row.end}</div>
-              {TRACKS.map((track) => {
-                const cell = row.tracks[track];
-                if (!cell) return <div key={track} role="cell" style={{ ...tdStyle, background: "transparent", boxShadow: "none" }} />;
-                return (
+        {rows.map((row) => {
+          const highlight = isCurrentRow(row);
+          return (
+            <RowWrapper key={row.id} highlight={highlight}>
+              {row.type === "merged" ? (
+                <div role="row" style={{ display: "grid", gridTemplateColumns: GRID_TEMPLATE, gap: 6, position: "relative", zIndex: 0, isolation: "isolate" }}>
+                  <div role="cell" style={tdTimeStyle}>{row.start}</div>
+                  <div role="cell" style={tdTimeStyle}>{row.end}</div>
                   <div
-                    key={track}
                     role="cell"
                     style={{
                       ...tdStyle,
-                      background: cell.tag ? TAG_COLOR[cell.tag] : COLORS.cardBg,
-                      filter: cell.status === "ended" ? "grayscale(0.75) opacity(0.6)" : "none",
+                      gridColumn: `3 / span ${TRACKS.length}`,
+                      background: row.tag ? TAG_COLOR[row.tag] : COLORS.mergedBg,
+                      filter: row.status === "ended" ? "grayscale(0.75) opacity(0.6)" : "none",
                     }}
                   >
                     <StatusCell
-                      title={cell.title}
-                      status={cell.status}
+                      title={row.title}
+                      status={row.status}
                       clickable={clickable}
-                      onClick={clickable ? () => onCellClick(`${row.id}-${track}`) : undefined}
+                      onClick={clickable ? () => onCellClick(row.id) : undefined}
+                      align="center"
                     />
                   </div>
-                );
-              })}
-            </div>
-          )
-        )}
+                </div>
+              ) : (
+                <div role="row" style={{ display: "grid", gridTemplateColumns: GRID_TEMPLATE, gap: 6, position: "relative", zIndex: 0, isolation: "isolate" }}>
+                  <div role="cell" style={tdTimeStyle}>{row.start}</div>
+                  <div role="cell" style={tdTimeStyle}>{row.end}</div>
+                  {TRACKS.map((track) => {
+                    const cell = row.tracks[track];
+                    if (!cell) return <div key={track} role="cell" style={{ ...tdStyle, background: "transparent", boxShadow: "none" }} />;
+                    return (
+                      <div
+                        key={track}
+                        role="cell"
+                        style={{
+                          ...tdStyle,
+                          background: cell.tag ? TAG_COLOR[cell.tag] : COLORS.cardBg,
+                          filter: cell.status === "ended" ? "grayscale(0.75) opacity(0.6)" : "none",
+                        }}
+                      >
+                        <StatusCell
+                          title={cell.title}
+                          status={cell.status}
+                          clickable={clickable}
+                          onClick={clickable ? () => onCellClick(`${row.id}-${track}`) : undefined}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </RowWrapper>
+          );
+        })}
       </div>
+    </div>
+  );
+}
+
+function RowWrapper({ highlight, children }) {
+  if (!highlight) {
+    return <div style={{ marginBottom: 6 }}>{children}</div>;
+  }
+  return (
+    <div
+      style={{
+        marginBottom: 0,
+        borderRadius: 14,
+        padding: 0,
+        animation: "smetec-row-glow 1.8s ease-in-out infinite",
+      }}
+    >
+      {children}
     </div>
   );
 }

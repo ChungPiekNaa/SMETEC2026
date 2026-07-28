@@ -12,6 +12,7 @@ export const COLORS = {
   mergedBg: "#FFFFFF",
   pageBg: "#F4F6F9",
   cardBg: "#FFFFFF",
+  nowRowGlow: "#FFC400",
 };
 
 export const GRADIENT = `linear-gradient(135deg, ${COLORS.headerBlue}, ${COLORS.headerTeal})`;
@@ -26,7 +27,7 @@ export const STATUS_COLOR = { upcoming: COLORS.upcoming, now: COLORS.now, ended:
 export const STATUS_STYLE = {
   upcoming: { bg: "#E7F6F8", fg: "#0F8A9C" },
   now: { bg: "#DFF3CB", fg: "#4C7A1E" },
-  ended: { bg: "#EEF1F3", fg: "#6B7684" },
+  ended: { bg: "#E4E6EA", fg: "#6B7684" },
 };
 
 // Schedule column order
@@ -50,7 +51,7 @@ export const TAG_COLOR = {
 
 // Every parallel block below is expressed as a start time plus a list of per-track bullet titles
 // Each bullet = 30 minutes, so start/end times for every row are generated automatically instead of typed by hand
-function toMinutes(label) {
+export function toMinutes(label) {
   const m = label.match(/(\d+):(\d+)(am|pm)/i);
   let [, h, min, ap] = m;
   h = parseInt(h, 10);
