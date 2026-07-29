@@ -121,7 +121,7 @@ function RowWrapper({ highlight, children }) {
   return (
     <div
       style={{
-        marginBottom: 0,
+        marginBottom: 6,
         borderRadius: 14,
         padding: 0,
         animation: "smetec-row-glow 1.8s ease-in-out infinite",
