@@ -1,9 +1,9 @@
 import React from "react";
 import { COLORS, CARD_SHADOW_LG } from "../scheduleData";
-import LegendPanel from "./LegendPanel";
 import AnnouncementBanner from "./AnnouncementBanner";
+import NoticeBanner from "./NoticeBanner";
 
-export default function PageHeader({ now, badge }) {
+export default function PageHeader({ now, badge, notice, noticeEditor }) {
   return (
     <div>
       <style>{`
@@ -62,7 +62,7 @@ export default function PageHeader({ now, badge }) {
           margin-left: auto;
           display: flex;
           flex-direction: column;
-          gap: clamp(6px, 1.5vw, 10px);
+          align-items: flex-end;
           container-type: inline-size;
         }
         @media (max-width: 720px) {
@@ -104,7 +104,8 @@ export default function PageHeader({ now, badge }) {
         </div>
 
         <div className="smetec-ph-right">
-          <LegendPanel />
+          {noticeEditor}
+          <NoticeBanner notice={notice} />
           <AnnouncementBanner now={now} />
         </div>
       </div>

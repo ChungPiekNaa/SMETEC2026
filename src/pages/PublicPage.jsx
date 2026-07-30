@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { subscribe } from "../lib/scheduleStore";
+import { subscribe, subscribeNotice } from "../lib/scheduleStore";
 import { COLORS, CARD_SHADOW_LG } from "../scheduleData";
 import ScheduleGrid from "../components/ScheduleGrid";
 import PageHeader from "../components/PageHeader";
@@ -10,6 +10,7 @@ export default function PublicPage() {
   const [now, setNow] = useState(new Date());
   const [connectionError, setConnectionError] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [notice, setNotice] = useState("");
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
@@ -21,6 +22,11 @@ export default function PublicPage() {
       (next) => { setRows(next); setConnectionError(false); },
       () => setConnectionError(true)
     );
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = subscribeNotice((next) => setNotice(next || ""));
     return unsubscribe;
   }, []);
 
@@ -72,7 +78,7 @@ export default function PublicPage() {
 
       <div className="smetec-page-card">
         <div style={{ flex: "0 0 auto", background: COLORS.cardBg, position: "relative", zIndex: 5, boxShadow: scrolled ? "0 4px 14px rgba(16,24,40,0.08)" : "none", transition: "box-shadow 0.15s ease" }}>
-          <PageHeader now={now} />
+          <PageHeader now={now} notice={notice} />
 
           <div className="smetec-page-statusbar">
             <span style={{ fontSize: 11, color: connectionError ? "#C0392B" : COLORS.subtle }}>

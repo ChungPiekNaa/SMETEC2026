@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { subscribe, saveSessions } from "../lib/scheduleStore";
+import { subscribe, saveSessions, subscribeNotice, saveNotice } from "../lib/scheduleStore";
 import { STATUS, COLORS, GRADIENT, PILL_SHADOW, CARD_SHADOW_LG } from "../scheduleData";
 import ScheduleGrid from "../components/ScheduleGrid";
 import PageHeader from "../components/PageHeader";
 import ScheduleSkeleton from "../components/ScheduleSkeleton";
+import NoticeEditor from "../components/NoticeEditor";
 
 function nextStatus(current) {
   const idx = STATUS.indexOf(current);
@@ -34,6 +35,7 @@ export default function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [connectionError, setConnectionError] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [notice, setNotice] = useState("");
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
@@ -48,6 +50,11 @@ export default function AdminPage() {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = subscribeNotice((next) => setNotice(next || ""));
+    return unsubscribe;
+  }, []);
+
   const handleCellClick = async (clickedId) => {
     const next = applyStatusChange(rows, clickedId);
     setRows(next); 
@@ -58,6 +65,15 @@ export default function AdminPage() {
       console.error(e);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleNoticeSave = async (text) => {
+    setNotice(text);
+    try {
+      await saveNotice(text);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -111,6 +127,8 @@ export default function AdminPage() {
         <div style={{ flex: "0 0 auto", background: COLORS.cardBg, position: "relative", zIndex: 5, boxShadow: scrolled ? "0 4px 14px rgba(16,24,40,0.08)" : "none", transition: "box-shadow 0.15s ease" }}>
           <PageHeader
             now={now}
+            notice={notice}
+            noticeEditor={<NoticeEditor value={notice} onSave={handleNoticeSave} />}
             badge={
               <span style={{ fontSize: 12.5, fontWeight: 700, color: "#fff", background: GRADIENT, borderRadius: 20, padding: "4px 12px", marginLeft: 10, verticalAlign: "middle", boxShadow: PILL_SHADOW }}>
                 ADMIN

@@ -42,11 +42,19 @@ export const TAG_LABEL = {
 };
 
 export const TAG_COLOR = {
-  E: "#83d166", 
-  M: "#b3cee5",  
-  C: "#fadfc2", 
-  TO: "#fbcbe0", 
-  CF: "#ffff00", 
+  E: "#F04438",
+  M: "#FF8A4C",
+  C: "#FFD43B",
+  TO: "#74C0FC",
+  CF: "#B197FC",
+};
+
+export const TAG_BADGE_STYLE = {
+  E: { bg: "#C92A2A", fg: "#FFE3E3" },
+  M: { bg: "#D9480F", fg: "#FFE8CC" },
+  C: { bg: "#B08900", fg: "#FFF9DB" },
+  TO: { bg: "#1864AB", fg: "#D0EBFF" },
+  CF: { bg: "#862E9C", fg: "#F3E8FF" },
 };
 
 // Every parallel block below is expressed as a start time plus a list of per-track bullet titles

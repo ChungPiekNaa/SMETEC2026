@@ -11,6 +11,7 @@ import { db } from "./firebase";
 import { buildSeedSessions } from "../scheduleData";
 
 const scheduleDocRef = doc(db, "schedules", "smetec2026");
+const noticeDocRef = doc(db, "notices", "smetec2026");
 
 // Calls onChange(sessions) immediately with the current data, then again whenever the schedule changes on any device
 export function subscribe(onChange, onError) {
@@ -40,4 +41,22 @@ export async function resetSessions() {
   const seed = buildSeedSessions();
   await setDoc(scheduleDocRef, { sessions: seed });
   return seed;
+}
+
+// real-time updates for the organiser notice
+export function subscribeNotice(onChange, onError) {
+  return onSnapshot(
+    noticeDocRef,
+    (snap) => {
+      onChange(snap.exists() ? snap.data().text || "" : "");
+    },
+    (error) => {
+      console.error("Notice sync error:", error);
+      onError?.(error);
+    }
+  );
+}
+
+export async function saveNotice(text) {
+  await setDoc(noticeDocRef, { text });
 }

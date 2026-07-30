@@ -1,5 +1,5 @@
 import React from "react";
-import { COLORS, GRADIENT, CARD_SHADOW, CARD_SHADOW_LG, STATUS_STYLE, TAG_COLOR, TRACKS, toMinutes } from "../scheduleData";
+import { COLORS, GRADIENT, CARD_SHADOW, CARD_SHADOW_LG, STATUS_STYLE, TAG_LABEL, TAG_BADGE_STYLE, TRACKS, toMinutes } from "../scheduleData";
 
 const GRID_TEMPLATE = `90px 90px repeat(${TRACKS.length}, 1fr)`;
 
@@ -65,13 +65,15 @@ export default function ScheduleGrid({ rows, onCellClick, now, stickyTop = 0 }) 
                     style={{
                       ...tdStyle,
                       gridColumn: `3 / span ${TRACKS.length}`,
-                      background: row.tag ? TAG_COLOR[row.tag] : COLORS.mergedBg,
-                      filter: row.status === "ended" ? "grayscale(0.75) opacity(0.6)" : "none",
+                      background: cellBackground(row.status),
+                      boxShadow: cellShadow(row.status),
+                      filter: cellFilter(row.status),
                     }}
                   >
                     <StatusCell
                       title={row.title}
                       status={row.status}
+                      tag={row.tag}
                       clickable={clickable}
                       onClick={clickable ? () => onCellClick(row.id) : undefined}
                       align="center"
@@ -91,13 +93,15 @@ export default function ScheduleGrid({ rows, onCellClick, now, stickyTop = 0 }) 
                         role="cell"
                         style={{
                           ...tdStyle,
-                          background: cell.tag ? TAG_COLOR[cell.tag] : COLORS.cardBg,
-                          filter: cell.status === "ended" ? "grayscale(0.75) opacity(0.6)" : "none",
+                          background: cellBackground(cell.status),
+                          boxShadow: cellShadow(cell.status),
+                          filter: cellFilter(cell.status),
                         }}
                       >
                         <StatusCell
                           title={cell.title}
                           status={cell.status}
+                          tag={cell.tag}
                           clickable={clickable}
                           onClick={clickable ? () => onCellClick(`${row.id}-${track}`) : undefined}
                         />
@@ -112,6 +116,21 @@ export default function ScheduleGrid({ rows, onCellClick, now, stickyTop = 0 }) 
       </div>
     </div>
   );
+}
+
+function cellBackground(status) {
+  if (status === "now") return COLORS.now;
+  if (status === "ended") return COLORS.ended;
+  return COLORS.cardBg;
+}
+
+function cellShadow(status) {
+  if (status === "now") return `0 4px 16px ${COLORS.now}66`;
+  return CARD_SHADOW;
+}
+
+function cellFilter(status) {
+  return status === "ended" ? "grayscale(1) opacity(0.5)" : "none";
 }
 
 function RowWrapper({ highlight, children }) {
@@ -132,8 +151,36 @@ function RowWrapper({ highlight, children }) {
   );
 }
 
-function StatusCell({ title, status, clickable, onClick, align }) {
-  const pill = STATUS_STYLE[status];
+function CategoryBadge({ tag, align }) {
+  if (!tag) return null;
+  const style = TAG_BADGE_STYLE[tag];
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 5,
+        fontSize: 10,
+        fontWeight: 700,
+        color: style.fg,
+        background: style.bg,
+        borderRadius: 6,
+        padding: "3px 8px",
+        letterSpacing: 0.3,
+        marginBottom: 8,
+        width: "fit-content",
+        alignSelf: align === "center" ? "center" : "flex-start",
+      }}
+    >
+      {TAG_LABEL[tag].toUpperCase()}
+    </span>
+  );
+}
+
+function StatusCell({ title, status, tag, clickable, onClick, align }) {
+  const isNow = status === "now";
+  const pill = isNow ? { bg: "#FFFFFF", fg: STATUS_STYLE.now.fg } : STATUS_STYLE[status];
+
   return (
     <div
       onClick={onClick}
@@ -156,11 +203,13 @@ function StatusCell({ title, status, clickable, onClick, align }) {
       onMouseLeave={(e) => { if (clickable) e.currentTarget.style.transform = "translateY(0)"; }}
       title={clickable ? "Click to change status" : undefined}
     >
+      <CategoryBadge tag={tag} align={align} />
+
       <div
         style={{
           fontSize: 13.5,
           lineHeight: 1.35,
-          color: COLORS.ink,
+          color: isNow ? "#FFFFFF" : COLORS.ink,
           fontWeight: align === "center" ? 600 : 500,
           textAlign: align === "center" ? "center" : "left",
         }}
