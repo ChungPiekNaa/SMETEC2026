@@ -49,15 +49,43 @@ export default function RedeemPage() {
   useEffect(() => {
     Html5Qrcode.getCameras()
       .then((devices) => {
-        if (!devices || !devices.length) {
+        if (!devices || devices.length === 0) {
           setCameraError("No camera found on this device. Use manual entry below.");
           return;
         }
-        setCameras(devices);
-        const back = devices.find((d) => /back|rear|environment/i.test(d.label));
-        setCameraId((back || devices[devices.length - 1]).id);
+
+        const pickPrimaryLens = (candidates) => {
+          if (candidates.length <= 1) return candidates[0] || null;
+
+          const explicit1x = candidates.find((d) => /(^|\D)1x(\D|$)/i.test(d.label));
+          if (explicit1x) return explicit1x;
+
+          const filtered = candidates.filter(
+            (d) => !/ultra|wide|tele|zoom|0\.5x|2x|3x|5x/i.test(d.label)
+          );
+          if (filtered.length > 0) return filtered[0];
+
+          return candidates[0];
+        };
+
+        const backCandidates = devices.filter((d) => /back|rear|environment/i.test(d.label));
+        const frontCandidates = devices.filter((d) => /front|user/i.test(d.label));
+
+        const backCamera = pickPrimaryLens(backCandidates);
+        const frontCamera = pickPrimaryLens(frontCandidates);
+
+        const filteredCameras = [backCamera, frontCamera].filter(Boolean);
+
+        setCameras(filteredCameras);
+
+        // Default to back 1x camera
+        setCameraId(backCamera?.id || filteredCameras[0]?.id);
       })
-      .catch(() => setCameraError("Camera access was blocked. Allow camera access, or use manual entry below."));
+      .catch(() =>
+        setCameraError(
+          "Camera access was blocked. Allow camera access, or use manual entry below."
+        )
+      );
   }, []);
 
   const scheduleReset = useCallback(() => {
@@ -103,9 +131,16 @@ export default function RedeemPage() {
 
     qr.start(
       cameraId,
-      { fps: 10, qrbox: { width: 250, height: 250 } },
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        videoConstraints: {
+          deviceId: { exact: cameraId },
+          advanced: [{ zoom: 1 }]
+        }
+      },
       (decodedText) => processCode(decodedText),
-      () => {} 
+      () => {}
     ).catch(() => {
       if (!cancelled) setCameraError("Couldn't start the camera. Check permissions and try again.");
     });
