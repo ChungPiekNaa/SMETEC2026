@@ -24,6 +24,20 @@ function formatTime(date) {
   return date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
+function pickPrimaryLens(candidates) {
+  if (candidates.length <= 1) return candidates[0] || null;
+
+  const explicit1x = candidates.find((d) => /(^|\D)1x(\D|$)/i.test(d.label));
+  if (explicit1x) return explicit1x;
+
+  const filtered = candidates.filter(
+    (d) => !/ultra|wide|tele|zoom|0\.5x|2x|3x|5x/i.test(d.label)
+  );
+  if (filtered.length > 0) return filtered[0];
+
+  return candidates[0];
+}
+
 export default function RedeemPage() {
   const scannerElRef = useRef(null);
   const busyRef = useRef(false);
@@ -49,24 +63,10 @@ export default function RedeemPage() {
   useEffect(() => {
     Html5Qrcode.getCameras()
       .then((devices) => {
-        if (!devices || devices.length === 0) {
+        if (!devices || !devices.length) {
           setCameraError("No camera found on this device. Use manual entry below.");
           return;
         }
-
-        const pickPrimaryLens = (candidates) => {
-          if (candidates.length <= 1) return candidates[0] || null;
-
-          const explicit1x = candidates.find((d) => /(^|\D)1x(\D|$)/i.test(d.label));
-          if (explicit1x) return explicit1x;
-
-          const filtered = candidates.filter(
-            (d) => !/ultra|wide|tele|zoom|0\.5x|2x|3x|5x/i.test(d.label)
-          );
-          if (filtered.length > 0) return filtered[0];
-
-          return candidates[0];
-        };
 
         const backCandidates = devices.filter((d) => /back|rear|environment/i.test(d.label));
         const frontCandidates = devices.filter((d) => /front|user/i.test(d.label));
@@ -76,15 +76,14 @@ export default function RedeemPage() {
 
         const filteredCameras = [backCamera, frontCamera].filter(Boolean);
 
-        setCameras(filteredCameras);
+        setCameras(filteredCameras.length ? filteredCameras : devices);
 
-        // Default to back 1x camera
-        setCameraId(backCamera?.id || filteredCameras[0]?.id);
+        setCameraId(
+          backCamera?.id || filteredCameras[0]?.id || devices[devices.length - 1].id
+        );
       })
       .catch(() =>
-        setCameraError(
-          "Camera access was blocked. Allow camera access, or use manual entry below."
-        )
+        setCameraError("Camera access was blocked. Allow camera access, or use manual entry below.")
       );
   }, []);
 
@@ -124,58 +123,63 @@ export default function RedeemPage() {
   );
 
   useEffect(() => {
-      if (!cameraId) return undefined;
-      const qr = new Html5Qrcode(SCANNER_ELEMENT_ID, { verbose: false });
-      scannerElRef.current = qr;
-      let cancelled = false;
+    if (!cameraId) return undefined;
+    const qr = new Html5Qrcode(SCANNER_ELEMENT_ID, { verbose: false });
+    scannerElRef.current = qr;
+    let cancelled = false;
 
-      qr.start(
-        cameraId,
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
-          videoConstraints: {
-            deviceId: { exact: cameraId }
-          }
-        },
-        (decodedText) => processCode(decodedText),
-        () => {}
-      )
-        .then(async () => {
-          if (cancelled) return;
-          try {
-            const videoEl = document.querySelector(`#${SCANNER_ELEMENT_ID} video`);
-            const track = videoEl?.srcObject?.getVideoTracks?.()[0];
-            if (track) {
-              const capabilities = track.getCapabilities?.();
-              if (capabilities?.zoom) {
-                const minZoom = capabilities.zoom.min ?? 1;
-                await track.applyConstraints({ advanced: [{ zoom: minZoom }] });
-              }
-            }
-          } catch (e) {
-            console.warn("Zoom reset failed:", e);
-          }
-        })
-        .catch(() => {
-          if (!cancelled) setCameraError("Couldn't start the camera. Check permissions and try again.");
-        });
+    qr.start(
+      cameraId,
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        videoConstraints: { deviceId: { exact: cameraId } }
+      },
+      (decodedText) => processCode(decodedText),
+      () => {} 
+    )
+      .then(async () => {
+        if (cancelled) return;
 
-      return () => {
-        cancelled = true;
-        if (qr.isScanning) {
-          qr.stop().then(() => qr.clear()).catch(() => {});
-        } else {
-          try { qr.clear(); } catch {}
+        let track = null;
+        for (let attempt = 0; attempt < 10 && !cancelled; attempt++) {
+          const videoEl = document.querySelector(`#${SCANNER_ELEMENT_ID} video`);
+          track = videoEl?.srcObject?.getVideoTracks?.()[0];
+          if (track) break;
+          await new Promise((r) => setTimeout(r, 100));
         }
-      };
-    }, [cameraId, processCode]);
+        if (!track) return;
 
-    const switchCamera = () => {
-      if (cameras.length < 2) return;
-      const idx = cameras.findIndex((c) => c.id === cameraId);
-      setCameraId(cameras[(idx + 1) % cameras.length].id);
+        try {
+          const capabilities = track.getCapabilities?.();
+          if (capabilities?.zoom) {
+            const { min = 1, max = 1 } = capabilities.zoom;
+            const target = min <= 1 && max >= 1 ? 1 : min;
+            await track.applyConstraints({ advanced: [{ zoom: target }] });
+          }
+        } catch (e) {
+          console.warn("Zoom reset failed:", e);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setCameraError("Couldn't start the camera. Check permissions and try again.");
+      });
+
+    return () => {
+      cancelled = true;
+      if (qr.isScanning) {
+        qr.stop().then(() => qr.clear()).catch(() => {});
+      } else {
+        try { qr.clear(); } catch {}
+      }
     };
+  }, [cameraId, processCode]);
+
+  const switchCamera = () => {
+    if (cameras.length < 2) return;
+    const idx = cameras.findIndex((c) => c.id === cameraId);
+    setCameraId(cameras[(idx + 1) % cameras.length].id);
+  };
 
   const toggleTorch = async () => {
     const qr = scannerElRef.current;
