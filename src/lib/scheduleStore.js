@@ -6,12 +6,13 @@
 // onSnapshot provides real-time updates to all connected users
 // When the schedule document changes, Firestore automatically pushes the latest data without requiring manual polling
 
-import { doc, onSnapshot, setDoc } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, runTransaction, serverTimestamp, collection } from "firebase/firestore";
 import { db } from "./firebase";
 import { buildSeedSessions } from "../scheduleData";
 
 const scheduleDocRef = doc(db, "schedules", "smetec2026");
 const noticeDocRef = doc(db, "notices", "smetec2026");
+const redemptionsCollectionRef = collection(db, "redemptions");
 
 // Calls onChange(sessions) immediately with the current data, then again whenever the schedule changes on any device
 export function subscribe(onChange, onError) {
@@ -59,4 +60,59 @@ export function subscribeNotice(onChange, onError) {
 
 export async function saveNotice(text) {
   await setDoc(noticeDocRef, { text });
+}
+
+const MEAL_TYPES = ["breakfast", "lunch"];
+
+export function parseCouponQR(raw) {
+  if (!raw || typeof raw !== "string") return { ok: false };
+  const parts = raw.trim().split("|");
+  if (parts.length !== 3) return { ok: false };
+  const [prefix, couponIdRaw, mealRaw] = parts;
+  if (prefix !== "SMETEC2026") return { ok: false };
+  const couponId = couponIdRaw.trim().toUpperCase();
+  const mealType = (mealRaw || "").trim().toLowerCase();
+  if (!couponId || !MEAL_TYPES.includes(mealType)) return { ok: false };
+  return { ok: true, couponId, mealType };
+}
+
+export async function redeemCoupon(couponId, mealType) {
+  const ref = doc(redemptionsCollectionRef, couponId);
+  return runTransaction(db, async (tx) => {
+    const snap = await tx.get(ref);
+    const data = snap.exists() ? snap.data() : {};
+    const existing = data[mealType];
+
+    if (existing?.redeemed) {
+      return {
+        status: "already",
+        couponId,
+        mealType,
+        redeemedAt: existing.redeemedAt?.toDate ? existing.redeemedAt.toDate() : null,
+      };
+    }
+
+    tx.set(ref, { [mealType]: { redeemed: true, redeemedAt: serverTimestamp() } }, { merge: true });
+    return { status: "success", couponId, mealType };
+  });
+}
+
+export function subscribeRedemptionStats(onChange, onError) {
+  return onSnapshot(
+    redemptionsCollectionRef,
+    (snap) => {
+      let breakfast = 0;
+      let lunch = 0;
+      snap.forEach((d) => {
+        const data = d.data();
+        if (data.breakfast?.redeemed) breakfast += 1;
+        if (data.lunch?.redeemed) lunch += 1;
+      });
+      onChange({ breakfast, lunch, total: snap.size });
+    },
+    (error) => {
+      console.error("Redemption stats sync error:", error);
+      onError?.(error);
+    }
+  );
 }

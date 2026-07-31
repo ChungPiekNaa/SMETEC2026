@@ -125,7 +125,7 @@ const MORNING_TALKS = {
     { title: "Application of Numerical Modelling in an Environmental Impact Assessment (EIA) for Thermal Power Plant development", tag: "TO" },
   ],
   Bakun: [
-    { title: "Finance Continuous Improvement: Past, Present and Future", tag: "CF" },
+    { title: "Machine Learning Empowered Electronic Nose for Transformer Oil Rapid Analysis", tag: "TO" },
     { title: "Creating Value and Driving Innovation for the Utility Sector", tag: "TO" },
     { title: "Protecting Our Intellectual Property", tag: "TO" },
     { title: "Small Generators and Power Systems to Support the Energy Transition", tag: "TO" },
@@ -149,7 +149,7 @@ const AFTERNOON_TALKS = {
   ],
   Murum: [
     { title: "From Principles to Practice: Free, Prior, and Informed Consent (FPIC) Implementation Insights from Sarawak Energy's International Project (Indonesia)", tag: "CF" },
-    { title: "Machine Learning Empowered Electronic Nose for Transformer Oil Rapid Analysis", tag: "TO" },
+    { title: "Finance Continuous Improvement: Past, Present and Future", tag: "CF" },
   ],
   Bakun: [
     { title: "Advancing Environmental Sciences in Power Utilities", tag: "TO" },
