@@ -19,23 +19,38 @@ const SCANNER_ELEMENT_ID = "smetec-redeem-scanner";
 const RESULT_DISPLAY_MS = 2800;
 const RESCAN_COOLDOWN_MS = 4000;
 
+const EXCLUDE_LENS_PATTERN = /ultra\s*-?\s*wide|wide\s*angle|telephoto|\btele\b|macro|\b0\.5x?\b|\b2x\b|\b3x\b|\b5x\b/i;
+const BACK_PATTERN = /back|rear|environment/i;
+const FRONT_PATTERN = /front|user|face/i;
+
+function pickFrontAndBack1x(devices) {
+  const backCandidates = devices.filter((d) => BACK_PATTERN.test(d.label));
+  const frontCandidates = devices.filter((d) => FRONT_PATTERN.test(d.label));
+
+  let back1x =
+    backCandidates.find((d) => !EXCLUDE_LENS_PATTERN.test(d.label)) || backCandidates[0];
+  let front = frontCandidates[0];
+
+  if (!back1x && !front) {
+    if (devices.length === 1) {
+      back1x = devices[0];
+    } else if (devices.length > 1) {
+      front = devices[0];
+      back1x = devices[devices.length - 1];
+    }
+  } else if (!back1x && devices.length) {
+    back1x = devices.find((d) => d !== front) || devices[0];
+  }
+
+  const result = [];
+  if (back1x) result.push({ ...back1x, position: "back" });
+  if (front && front.id !== back1x?.id) result.push({ ...front, position: "front" });
+  return result;
+}
+
 function formatTime(date) {
   if (!date) return null;
   return date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
-}
-
-function pickPrimaryLens(candidates) {
-  if (candidates.length <= 1) return candidates[0] || null;
-
-  const explicit1x = candidates.find((d) => /(^|\D)1x(\D|$)/i.test(d.label));
-  if (explicit1x) return explicit1x;
-
-  const filtered = candidates.filter(
-    (d) => !/ultra|wide|tele|zoom|0\.5x|2x|3x|5x/i.test(d.label)
-  );
-  if (filtered.length > 0) return filtered[0];
-
-  return candidates[0];
 }
 
 export default function RedeemPage() {
@@ -67,24 +82,16 @@ export default function RedeemPage() {
           setCameraError("No camera found on this device. Use manual entry below.");
           return;
         }
-
-        const backCandidates = devices.filter((d) => /back|rear|environment/i.test(d.label));
-        const frontCandidates = devices.filter((d) => /front|user/i.test(d.label));
-
-        const backCamera = pickPrimaryLens(backCandidates);
-        const frontCamera = pickPrimaryLens(frontCandidates);
-
-        const filteredCameras = [backCamera, frontCamera].filter(Boolean);
-
-        setCameras(filteredCameras.length ? filteredCameras : devices);
-
-        setCameraId(
-          backCamera?.id || filteredCameras[0]?.id || devices[devices.length - 1].id
-        );
+        const filtered = pickFrontAndBack1x(devices);
+        if (!filtered.length) {
+          setCameraError("No camera found on this device. Use manual entry below.");
+          return;
+        }
+        setCameras(filtered);
+        const back = filtered.find((d) => d.position === "back");
+        setCameraId((back || filtered[0]).id);
       })
-      .catch(() =>
-        setCameraError("Camera access was blocked. Allow camera access, or use manual entry below.")
-      );
+      .catch(() => setCameraError("Camera access was blocked. Allow camera access, or use manual entry below."));
   }, []);
 
   const scheduleReset = useCallback(() => {
@@ -130,40 +137,12 @@ export default function RedeemPage() {
 
     qr.start(
       cameraId,
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        videoConstraints: { deviceId: { exact: cameraId } }
-      },
+      { fps: 10, qrbox: { width: 250, height: 250 } },
       (decodedText) => processCode(decodedText),
-      () => {} 
-    )
-      .then(async () => {
-        if (cancelled) return;
-
-        let track = null;
-        for (let attempt = 0; attempt < 10 && !cancelled; attempt++) {
-          const videoEl = document.querySelector(`#${SCANNER_ELEMENT_ID} video`);
-          track = videoEl?.srcObject?.getVideoTracks?.()[0];
-          if (track) break;
-          await new Promise((r) => setTimeout(r, 100));
-        }
-        if (!track) return;
-
-        try {
-          const capabilities = track.getCapabilities?.();
-          if (capabilities?.zoom) {
-            const { min = 1, max = 1 } = capabilities.zoom;
-            const target = min <= 1 && max >= 1 ? 1 : min;
-            await track.applyConstraints({ advanced: [{ zoom: target }] });
-          }
-        } catch (e) {
-          console.warn("Zoom reset failed:", e);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setCameraError("Couldn't start the camera. Check permissions and try again.");
-      });
+      () => {}
+    ).catch(() => {
+      if (!cancelled) setCameraError("Couldn't start the camera. Check permissions and try again.");
+    });
 
     return () => {
       cancelled = true;
