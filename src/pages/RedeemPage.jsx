@@ -33,7 +33,7 @@ function pickFrontAndBack1x(devices) {
 
   if (!back1x && !front) {
     if (devices.length === 1) {
-      back1x = devices[0];
+      front = devices[0];
     } else if (devices.length > 1) {
       front = devices[0];
       back1x = devices[devices.length - 1];
@@ -61,6 +61,7 @@ export default function RedeemPage() {
 
   const [cameras, setCameras] = useState([]);
   const [cameraId, setCameraId] = useState(null);
+  const [cameraPosition, setCameraPosition] = useState("back");
   const [cameraError, setCameraError] = useState(null);
   const [torchOn, setTorchOn] = useState(false);
   const [result, setResult] = useState(null);
@@ -88,8 +89,9 @@ export default function RedeemPage() {
           return;
         }
         setCameras(filtered);
-        const back = filtered.find((d) => d.position === "back");
-        setCameraId((back || filtered[0]).id);
+        const back = filtered.find((d) => d.position === "back") || filtered[0];
+        setCameraId(back.id);
+        setCameraPosition(back.position || "back");
       })
       .catch(() => setCameraError("Camera access was blocked. Allow camera access, or use manual entry below."));
   }, []);
@@ -157,7 +159,10 @@ export default function RedeemPage() {
   const switchCamera = () => {
     if (cameras.length < 2) return;
     const idx = cameras.findIndex((c) => c.id === cameraId);
-    setCameraId(cameras[(idx + 1) % cameras.length].id);
+    const next = cameras[(idx + 1) % cameras.length];
+    setCameraId(next.id);
+    setCameraPosition(next.position || (idx === 0 ? "front" : "back"));
+    setTorchOn(false); // torch state resets since front cameras don't support it
   };
 
   const toggleTorch = async () => {
@@ -303,6 +308,14 @@ export default function RedeemPage() {
           width: 100% !important;
           height: 100% !important;
           object-fit: cover !important;
+          /* Back camera: show the true, non-mirrored image (like a real scanner).
+             Front camera: mirror it, like every phone's selfie camera does. */
+          transform: none;
+          -webkit-transform: none;
+        }
+        .smetec-scan-frame[data-camera-position="front"] #${SCANNER_ELEMENT_ID} video {
+          transform: scaleX(-1) !important;
+          -webkit-transform: scaleX(-1) !important;
         }
         .smetec-scan-overlay {
           position: absolute;
@@ -560,7 +573,7 @@ export default function RedeemPage() {
             <div className="smetec-camera-error">{cameraError}</div>
           ) : (
             <>
-              <div className="smetec-scan-frame">
+              <div className="smetec-scan-frame" data-camera-position={cameraPosition}>
                 <div id={SCANNER_ELEMENT_ID} />
                 <div className="smetec-scan-overlay">
                   <div className="smetec-scan-box">
@@ -575,11 +588,15 @@ export default function RedeemPage() {
               <div className="smetec-scan-hint">Point the camera at an attendee's breakfast or lunch QR code</div>
               <div className="smetec-scan-tools">
                 {cameras.length > 1 && (
-                  <button type="button" className="smetec-scan-tool-btn" onClick={switchCamera}>⟲ Switch camera</button>
+                  <button type="button" className="smetec-scan-tool-btn" onClick={switchCamera}>
+                    ⟲ {cameraPosition === "front" ? "Front camera" : "Back camera"}
+                  </button>
                 )}
-                <button type="button" className="smetec-scan-tool-btn" onClick={toggleTorch}>
-                  {torchOn ? "🔦 Torch on" : "🔦 Torch"}
-                </button>
+                {cameraPosition === "back" && (
+                  <button type="button" className="smetec-scan-tool-btn" onClick={toggleTorch}>
+                    {torchOn ? "🔦 Torch on" : "🔦 Torch"}
+                  </button>
+                )}
               </div>
             </>
           )}
