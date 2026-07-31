@@ -124,42 +124,58 @@ export default function RedeemPage() {
   );
 
   useEffect(() => {
-    if (!cameraId) return undefined;
-    const qr = new Html5Qrcode(SCANNER_ELEMENT_ID, { verbose: false });
-    scannerElRef.current = qr;
-    let cancelled = false;
+      if (!cameraId) return undefined;
+      const qr = new Html5Qrcode(SCANNER_ELEMENT_ID, { verbose: false });
+      scannerElRef.current = qr;
+      let cancelled = false;
 
-    qr.start(
-      cameraId,
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        videoConstraints: {
-          deviceId: { exact: cameraId },
-          advanced: [{ zoom: 1 }]
+      qr.start(
+        cameraId,
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+          videoConstraints: {
+            deviceId: { exact: cameraId }
+          }
+        },
+        (decodedText) => processCode(decodedText),
+        () => {}
+      )
+        .then(async () => {
+          if (cancelled) return;
+          try {
+            const videoEl = document.querySelector(`#${SCANNER_ELEMENT_ID} video`);
+            const track = videoEl?.srcObject?.getVideoTracks?.()[0];
+            if (track) {
+              const capabilities = track.getCapabilities?.();
+              if (capabilities?.zoom) {
+                const minZoom = capabilities.zoom.min ?? 1;
+                await track.applyConstraints({ advanced: [{ zoom: minZoom }] });
+              }
+            }
+          } catch (e) {
+            console.warn("Zoom reset failed:", e);
+          }
+        })
+        .catch(() => {
+          if (!cancelled) setCameraError("Couldn't start the camera. Check permissions and try again.");
+        });
+
+      return () => {
+        cancelled = true;
+        if (qr.isScanning) {
+          qr.stop().then(() => qr.clear()).catch(() => {});
+        } else {
+          try { qr.clear(); } catch {}
         }
-      },
-      (decodedText) => processCode(decodedText),
-      () => {}
-    ).catch(() => {
-      if (!cancelled) setCameraError("Couldn't start the camera. Check permissions and try again.");
-    });
+      };
+    }, [cameraId, processCode]);
 
-    return () => {
-      cancelled = true;
-      if (qr.isScanning) {
-        qr.stop().then(() => qr.clear()).catch(() => {});
-      } else {
-        try { qr.clear(); } catch {}
-      }
+    const switchCamera = () => {
+      if (cameras.length < 2) return;
+      const idx = cameras.findIndex((c) => c.id === cameraId);
+      setCameraId(cameras[(idx + 1) % cameras.length].id);
     };
-  }, [cameraId, processCode]);
-
-  const switchCamera = () => {
-    if (cameras.length < 2) return;
-    const idx = cameras.findIndex((c) => c.id === cameraId);
-    setCameraId(cameras[(idx + 1) % cameras.length].id);
-  };
 
   const toggleTorch = async () => {
     const qr = scannerElRef.current;
