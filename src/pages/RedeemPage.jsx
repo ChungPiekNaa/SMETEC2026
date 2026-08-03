@@ -416,10 +416,13 @@ export default function RedeemPage() {
           border: 1.5px solid #DCE6F0;
           border-radius: 14px;
           padding: 14px 16px;
+          box-sizing: border-box;
+          overflow: hidden;
         }
         .smetec-manual-row { display: flex; gap: 8px; margin-bottom: 8px; }
         .smetec-manual-input {
           flex: 1 1 auto;
+          min-width: 0;
           box-sizing: border-box;
           border: 1.5px solid #DCE6F0;
           border-radius: 10px;
@@ -431,12 +434,19 @@ export default function RedeemPage() {
         }
         .smetec-manual-input:focus { border-color: ${COLORS.headerBlue}; }
         .smetec-manual-select {
+          flex: 0 0 auto;
+          min-width: 0;
+          max-width: 40%;
+          box-sizing: border-box;
           border: 1.5px solid #DCE6F0;
           border-radius: 10px;
-          padding: 9px 10px;
+          padding: 9px 28px 9px 10px;
           font-size: 13px;
           font-family: inherit;
-          background: #fff;
+          background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23445' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 8px center / 14px 14px;
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
           color: ${COLORS.ink};
           font-weight: 600;
         }
