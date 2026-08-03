@@ -4,19 +4,19 @@ import { parseCouponQR, redeemCoupon, subscribeRedemptionStats } from "../lib/sc
 import { COLORS, GRADIENT, CARD_SHADOW_LG, PILL_SHADOW } from "../scheduleData";
 
 const MEAL_META = {
-  breakfast: { label: "Breakfast", accent: "#F2994A", bg: "#FFF3E4", fg: "#B5590B" },
-  lunch: { label: "Lunch", accent: COLORS.now, bg: "#EAF7D8", fg: "#4C7A1E" },
+  breakfast: { label: "Breakfast", accent: "#8E7CC3", bg: "#F0EDFA", fg: "#5B3FA0" },
+  lunch: { label: "Lunch", accent: "#4A90D9", bg: "#E8F1FC", fg: "#1F5FA8" },
 };
 
 const STATUS_META = {
-  success: { title: "Redeemed successfully", accent: COLORS.now, bg: "#EAF7D8", fg: "#4C7A1E" },
-  already: { title: "Already redeemed", accent: "#E8A400", bg: "#FFF6DE", fg: "#8A5E00" },
-  invalid: { title: "Not a SMETEC 2026 coupon", accent: "#C0392B", bg: "#FDEDEC", fg: "#C0392B" },
-  error: { title: "Couldn't reach the database", accent: "#C0392B", bg: "#FDEDEC", fg: "#C0392B" },
+  success: { title: "Redeemed successfully", accent: COLORS.now, bg: "#EAF7D8", fg: "#4C7A1E", cardBg: "#F3FAEA" },
+  already: { title: "Already redeemed", accent: "#C0392B", bg: "#FDEDEC", fg: "#C0392B", cardBg: "#FDF1F0" },
+  invalid: { title: "Not a SMETEC 2026 coupon", accent: "#C0392B", bg: "#FDEDEC", fg: "#C0392B", cardBg: "#FDF1F0" },
+  error: { title: "Couldn't reach the database", accent: "#C0392B", bg: "#FDEDEC", fg: "#C0392B", cardBg: "#FDF1F0" },
 };
 
 const SCANNER_ELEMENT_ID = "smetec-redeem-scanner";
-const RESULT_DISPLAY_MS = 2800;
+const RESULT_DISPLAY_MS = 5000;
 const RESCAN_COOLDOWN_MS = 4000;
 
 const EXCLUDE_LENS_PATTERN = /ultra\s*-?\s*wide|wide\s*angle|telephoto|\btele\b|macro|\b0\.5x?\b|\b2x\b|\b3x\b|\b5x\b/i;
@@ -50,7 +50,9 @@ function pickFrontAndBack1x(devices) {
 
 function formatTime(date) {
   if (!date) return null;
-  return date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+  const datePart = date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  const timePart = date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+  return `${datePart}, ${timePart}`;
 }
 
 export default function RedeemPage() {
@@ -471,6 +473,7 @@ export default function RedeemPage() {
           max-width: 460px;
           background: #fff;
           border-radius: 22px 22px 0 0;
+          transition: background-color 0.2s ease;
           padding: 28px 26px 30px;
           box-sizing: border-box;
           text-align: center;
@@ -633,7 +636,11 @@ export default function RedeemPage() {
 
       {result && (
         <div className="smetec-result-backdrop" onClick={!isProcessing ? dismissResult : undefined}>
-          <div className="smetec-result-card" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="smetec-result-card"
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: !isProcessing && resultMeta ? resultMeta.cardBg : "#fff" }}
+          >
             {isProcessing ? (
               <>
                 <div className="smetec-result-ring" style={{ background: "#EEF3F8" }}>
@@ -644,8 +651,8 @@ export default function RedeemPage() {
               </>
             ) : (
               <>
-                <div className="smetec-result-ring" style={{ background: resultMeta.bg }}>
-                  <ResultIcon status={result.status} color={resultMeta.fg} />
+                <div className="smetec-result-ring" style={{ background: resultMeta.fg }}>
+                  <ResultIcon status={result.status} color="#fff" />
                 </div>
                 <div className="smetec-result-title" style={{ color: resultMeta.fg }}>{resultMeta.title}</div>
 
@@ -684,14 +691,6 @@ function ResultIcon({ status, color }) {
     return (
       <svg viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="34" height="34">
         <polyline points="20 6 9 17 4 12" />
-      </svg>
-    );
-  }
-  if (status === "already") {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" width="32" height="32">
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 7.5v5l3.2 1.9" />
       </svg>
     );
   }
