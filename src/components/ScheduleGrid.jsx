@@ -44,8 +44,8 @@ export default function ScheduleGrid({ rows, onCellClick, now, stickyTop = 0 }) 
           borderTopRightRadius: 16,
         }}
       >
-        <div role="columnheader" style={thStyle}>Time Start</div>
-        <div role="columnheader" style={thStyle}>Time End</div>
+        <div role="columnheader" style={thStyle}>Start</div>
+        <div role="columnheader" style={thStyle}>End</div>
         {TRACKS.map((t) => (
           <div key={t} role="columnheader" style={thStyle}>{t}</div>
         ))}
