@@ -74,6 +74,7 @@ export default function ScheduleGrid({ rows, onCellClick, now, stickyTop = 0 }) 
                       title={row.title}
                       status={row.status}
                       tag={row.tag}
+                      presenters={row.presenters}
                       clickable={clickable}
                       onClick={clickable ? () => onCellClick(row.id) : undefined}
                       align="center"
@@ -102,6 +103,7 @@ export default function ScheduleGrid({ rows, onCellClick, now, stickyTop = 0 }) 
                           title={cell.title}
                           status={cell.status}
                           tag={cell.tag}
+                          presenters={cell.presenters}
                           clickable={clickable}
                           onClick={clickable ? () => onCellClick(`${row.id}-${track}`) : undefined}
                         />
@@ -177,9 +179,75 @@ function CategoryBadge({ tag, align }) {
   );
 }
 
-function StatusCell({ title, status, tag, clickable, onClick, align }) {
+function PersonGlyph({ color }) {
+  return (
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+      <circle cx="12" cy="7.5" r="4" />
+      <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+    </svg>
+  );
+}
+
+function PresenterPill({ name, isNow }) {
+  const color = isNow ? "#FFFFFF" : COLORS.subtle;
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "flex-start",
+        gap: 5,
+        fontSize: 11,
+        fontWeight: 500,
+        color,
+        lineHeight: 1.3,
+      }}
+    >
+      <span style={{ marginTop: 1.5 }}><PersonGlyph color={color} /></span>
+      {name}
+    </span>
+  );
+}
+
+function StatusCell({ title, status, tag, presenters, clickable, onClick, align }) {
   const isNow = status === "now";
   const pill = isNow ? { bg: "#FFFFFF", fg: STATUS_STYLE.now.fg } : STATUS_STYLE[status];
+  const hasPresenters = Array.isArray(presenters) && presenters.length > 0;
+
+  const statusPill = (
+    <div
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 5,
+        fontSize: 10.5,
+        fontWeight: 700,
+        color: pill.fg,
+        background: pill.bg,
+        borderRadius: 20,
+        padding: "3px 10px",
+        letterSpacing: 0.3,
+        flexShrink: 0,
+      }}
+    >
+      {status.toUpperCase()}
+    </div>
+  );
+
+  const presenterRow = hasPresenters && (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: align === "center" ? "center" : "flex-start",
+        gap: 3,
+        width: "100%",
+      }}
+    >
+      {presenters.map((name) => (
+        <PresenterPill key={name} name={name} isNow={isNow} />
+      ))}
+    </div>
+  );
 
   return (
     <div
@@ -190,7 +258,7 @@ function StatusCell({ title, status, tag, clickable, onClick, align }) {
         width: "100%",
         minHeight: 64,
         boxSizing: "border-box",
-        padding: align === "center" ? "12px 18px" : "12px 14px 34px 18px",
+        padding: align === "center" ? "12px 18px" : "12px 14px 14px 18px",
         cursor: clickable ? "pointer" : "default",
         background: "transparent",
         display: "flex",
@@ -216,25 +284,20 @@ function StatusCell({ title, status, tag, clickable, onClick, align }) {
       >
         {title}
       </div>
+
       <div
         style={{
-          position: align === "center" ? "static" : "absolute",
-          left: align === "center" ? undefined : 18,
-          bottom: align === "center" ? undefined : 12,
-          marginTop: align === "center" ? 8 : 0,
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 5,
-          fontSize: 10.5,
-          fontWeight: 700,
-          color: pill.fg,
-          background: pill.bg,
-          borderRadius: 20,
-          padding: "3px 10px",
-          letterSpacing: 0.3,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: align === "center" ? "center" : "flex-start",
+          gap: 6,
+          marginTop: align === "center" ? 8 : "auto",
+          paddingTop: align === "center" ? 0 : 8,
+          width: "100%",
         }}
       >
-        {status.toUpperCase()}
+        {presenterRow}
+        {statusPill}
       </div>
     </div>
   );

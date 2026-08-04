@@ -6,7 +6,7 @@
 // onSnapshot provides real-time updates to all connected users
 // When the schedule document changes, Firestore automatically pushes the latest data without requiring manual polling
 
-import { doc, onSnapshot, setDoc, runTransaction, serverTimestamp, collection } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, setDoc, runTransaction, serverTimestamp, collection } from "firebase/firestore";
 import { db } from "./firebase";
 import { buildSeedSessions } from "../scheduleData";
 
@@ -42,6 +42,42 @@ export async function resetSessions() {
   const seed = buildSeedSessions();
   await setDoc(scheduleDocRef, { sessions: seed });
   return seed;
+}
+
+export async function syncSessionContent() {
+  const seed = buildSeedSessions();
+  const snap = await getDoc(scheduleDocRef);
+
+  if (!snap.exists()) {
+    await setDoc(scheduleDocRef, { sessions: seed });
+    return seed;
+  }
+
+  const current = snap.data().sessions || [];
+  const seedById = Object.fromEntries(seed.map((row) => [row.id, row]));
+
+  const merged = current.map((row) => {
+    const seedRow = seedById[row.id];
+    if (!seedRow) return row;
+
+    if (row.type === "merged") {
+      const { status, ...seedContent } = seedRow;
+      return { ...row, ...seedContent };
+    }
+
+    const tracks = { ...row.tracks };
+    Object.keys(tracks).forEach((track) => {
+      const seedCell = seedRow.tracks?.[track];
+      if (!seedCell) return;
+      const { status, ...seedCellContent } = seedCell;
+      tracks[track] = { ...tracks[track], ...seedCellContent };
+    });
+
+    return { ...row, tracks };
+  });
+
+  await setDoc(scheduleDocRef, { sessions: merged });
+  return merged;
 }
 
 // real-time updates for the organiser notice
