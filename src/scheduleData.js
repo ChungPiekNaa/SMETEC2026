@@ -100,22 +100,22 @@ const MORNING_TALKS = {
     { title: "Invisible Backbone: Why Communication Protocols are Vital for Distribution Automation", tag: "E", presenters: ["Teng Cheng Reen", "Ong Sie Siong"] },
     { title: "Current Transformer Placement Strategies in One-and-a-Half Breaker Substations for Secure and Sustainable Transmission Systems", tag: "E", presenters: ["Eric Lee Changgai Ak Awan"] },
     { title: "When Milliseconds Matter: Tackling Voltage Sags in Industrial Facilities", tag: "E", presenters: ["Andy Chai Kian Pang"] },
-    { title: "Outage Management Through Smart Technologies", tag: "E", presenters: ["Patrick Teo Tien"] },
-    { title: "Analysis of Sustained Oscillation at Sejingkat Coal-Fired Power Plant Based on Nonlinear Dynamical System Theory", tag: "E", presenters: ["Boniface Chia Hung Kwang"] },
+    { title: "Outage Management through Smart Technologies", tag: "E", presenters: ["Patrick Teo Tien"] },
+    { title: "Analysis of Sustained Oscillation at Sejingkat Coal-Fired Power Plant based on Nonlinear Dynamical System Theory", tag: "E", presenters: ["Boniface Chia Hung Kwang"] },
   ],
   Baleh: [
-    { title: "Reducing Forced Outage Due To Emission Non-Compliance Through The Installation Of Acoustic Air Horn System For ESP", tag: "M", presenters: ["Greg Gallang Anak Gomang"] },
+    { title: "Debris Cutter System as an Innovative Solution for Intake Clogging Issue at Sungai Kota 2 Mini Hydro, Lawas", tag: "TO", presenters: ["Fernand Alexson Kanyan Anak Jawa"] },
     { title: "From CO2 Emissions to Resource: A Circularity Approach to Capture, Utilisation, and Storage (CCUS) Using Coal Fly Ash", tag: "TO", presenters: ["Chang Yii Shiuan"] },
     { title: "Assessment of Gas Turbine Primary Frequency Response Limitations During Grid Disturbances", tag: "E", presenters: ["Chong Sue Joung"] },
-    { title: "Debris Cutter System as an Innovative Solution for Intake Clogging Issue at Sungai Kota 2 Mini Hydro, Lawas", tag: "TO", presenters: ["Fernand Alexson Kanyan Anak Jawa"] },
+    { title: "Reducing Forced Outage Due To Emission Non-Compliance through The Installation Of Acoustic Air Horn System For ESP", tag: "M", presenters: ["Greg Gallang Anak Gomang"] },
     { title: "Internal Consultancy Framework: Monetising our Mastery", tag: "E", presenters: ["Ting Lik Ming", "Aaron Kueh Swee Nguan"] },
   ],
   Baram: [
     { title: "Forensic Structural Investigation for Building Cracks at Astana 132kV Substation", tag: "C", presenters: ["Chung Mui Zhi"] },
-    { title: "Forecasting Challenges in Run-of-River Mini Hydropower Systems: Lessons from the Kota 2 Mini Hydro Project", tag: "C", presenters: ["Chris Aaron Anak Winston"] },
+    { title: "Principle of Explosive and It's Application", tag: "C", presenters: ["Ngu Seng Hing"] },
     { title: "Marudi Junction 275/132/33kV Substation Slope Stabilisation & Enhancement Works", tag: "C", presenters: ["Gerald Tan Yii Ta"] },
     { title: "Early Identification of Slope Instability through Preliminary Assessment: Application and Validation of a Proforma-Based Method", tag: "TO", presenters: ["Wong Yien Lim"] },
-    { title: "Principle of Explosive and It's Application", tag: "C", presenters: ["Ngu Seng Hing"] },
+    { title: "Forecasting Challenges in Run-of-River Mini Hydropower Systems: Lessons from the Kota 2 Mini Hydro Project", tag: "C", presenters: ["Chris Aaron Anak Winston"] },
   ],
   Murum: [
     { title: "Sarawak Energy Shared Environmental Information System (ENVIS): Transforming Environmental Data Management through Geospatial Intelligence Technology", tag: "TO", presenters: ["Luk Ing Ping"] },
@@ -128,7 +128,7 @@ const MORNING_TALKS = {
     { title: "Machine Learning Empowered Electronic Nose for Transformer Oil Rapid Analysis", tag: "TO", presenters: ["Alfred Tan Jia Yee"] },
     { title: "Creating Value and Driving Innovation for the Utility Sector", tag: "TO", presenters: ["Dr Ng Sing Muk"] },
     { title: "Protecting Our Intellectual Property", tag: "TO", presenters: ["Dr John Kiu Miin Fung"] },
-    { title: "Small Generators and Power Systems to Support the Energy Transition", tag: "TO", presenters: ["Gabriel Jatu", "Mohd Rahmat Jalani"] },
+    { title: "Small Generators and Power Systems to Support the Energy Transition", tag: "TO", presenters: ["Gabriel Anak Jatu", "Mohd Rahmat Bin Jalani"] },
     { title: "Smart Robotic Systems for Utilities", tag: "TO", presenters: ["Chai Yu Wun"] },
   ],
 };
@@ -148,7 +148,7 @@ const AFTERNOON_TALKS = {
     { title: "Fire Suppression System for Substation Application", tag: "E", presenters: ["Alvin Pui Khong Ping"] },
   ],
   Murum: [
-    { title: "From Principles to Practice: Free, Prior, and Informed Consent (FPIC) Implementation Insights from Sarawak Energy's International Project (Indonesia)", tag: "CF", presenters: ["Ng Koh Chang"] },
+    { title: "From Principles to Practice: Free, Prior, and Informed Consent (FPIC) Implementation Insights from Sarawak Energy's International Project (Indonesia)", tag: "CF", presenters: ["Alicia Ng Koh Chang"] },
     { title: "Finance Continuous Improvement: Past, Present and Future", tag: "CF", presenters: ["Nasrulridza Bin Yusuf"] },
   ],
   Bakun: [
