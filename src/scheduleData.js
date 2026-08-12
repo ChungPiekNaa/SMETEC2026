@@ -111,9 +111,9 @@ const MORNING_TALKS = {
     { title: "Internal Consultancy Framework: Monetising our Mastery", tag: "E", presenters: ["Ting Lik Ming", "Aaron Kueh Swee Nguan"] },
   ],
   Baram: [
-    { title: "Forensic Structural Investigation for Building Cracks at Astana 132kV Substation", tag: "C", presenters: ["Chung Mui Zhi"] },
+    { title: "Forensic Structural Investigation for Building Cracks at Astana 132kV Substation", tag: "C", presenters: ["Liew Hui Chiat", "Chung Mui Zhi"] },
     { title: "Principle of Explosive and It's Application", tag: "C", presenters: ["Ngu Seng Hing"] },
-    { title: "Marudi Junction 275/132/33kV Substation Slope Stabilisation & Enhancement Works", tag: "C", presenters: ["Gerald Tan Yii Ta"] },
+    { title: "Marudi Junction 275/132/33kV Substation Slope Stabilisation & Enhancement Works", tag: "C", presenters: ["Liew Hui Chiat", "Gerald Tan Yii Ta"] },
     { title: "Early Identification of Slope Instability through Preliminary Assessment: Application and Validation of a Proforma-Based Method", tag: "TO", presenters: ["Wong Yien Lim"] },
     { title: "Forecasting Challenges in Run-of-River Mini Hydropower Systems: Lessons from the Kota 2 Mini Hydro Project", tag: "C", presenters: ["Chris Aaron Anak Winston"] },
   ],
