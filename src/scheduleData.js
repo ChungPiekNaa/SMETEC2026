@@ -120,7 +120,7 @@ const MORNING_TALKS = {
   Murum: [
     { title: "Sarawak Energy Shared Environmental Information System (ENVIS): Transforming Environmental Data Management through Geospatial Intelligence Technology", tag: "TO", presenters: ["Luk Ing Ping"] },
     { title: "Building a Scalable Enterprise Data Platform for a Data-Driven Utility: A Case Study in Sarawak Energy", tag: "TO", presenters: ["Chai Chong Wee"] },
-    { title: "Scheduled Waste Management at Baleh HEP - Recovery of Waste Oil as a Sensitizer for Quarry Blasting Operation", tag: "TO", presenters: ["Jannatul Firdaus Bin Mohamad Badri"] },
+    { title: "From Principles to Practice: Free, Prior, and Informed Consent (FPIC) Implementation Insights from Sarawak Energy's International Project (Indonesia)", tag: "CF", presenters: ["Alicia Ng Koh Chang"] },
     { title: "Satisfaction and Happiness Level Survey: A tool for Project Resettlement Performance and Social Impact Measurement", tag: "CF", presenters: ["Samantha Liew Chiew Ing"] },
     { title: "Application of Numerical Modelling in an Environmental Impact Assessment (EIA) for Thermal Power Plant development", tag: "TO", presenters: ["Julaidi Bin Rasidi"] },
   ],
@@ -148,7 +148,7 @@ const AFTERNOON_TALKS = {
     { title: "Fire Suppression System for Substation Application", tag: "E", presenters: ["Alvin Pui Khong Ping"] },
   ],
   Murum: [
-    { title: "From Principles to Practice: Free, Prior, and Informed Consent (FPIC) Implementation Insights from Sarawak Energy's International Project (Indonesia)", tag: "CF", presenters: ["Alicia Ng Koh Chang"] },
+    { title: "Scheduled Waste Management at Baleh HEP - Recovery of Waste Oil as a Sensitizer for Quarry Blasting Operation", tag: "TO", presenters: ["Jannatul Firdaus Bin Mohamad Badri"] },
     { title: "Finance Continuous Improvement: Past, Present and Future", tag: "CF", presenters: ["Nasrulridza Bin Yusuf"] },
   ],
   Bakun: [
