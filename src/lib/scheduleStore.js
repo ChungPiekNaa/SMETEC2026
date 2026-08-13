@@ -14,24 +14,26 @@ const scheduleDocRef = doc(db, "schedules", "smetec2026");
 const noticeDocRef = doc(db, "notices", "smetec2026");
 const redemptionsCollectionRef = collection(db, "redemptions");
 
-// Calls onChange(sessions) immediately with the current data, then again whenever the schedule changes on any device
 export function subscribe(onChange, onError) {
   return onSnapshot(
     scheduleDocRef,
-    async (snap) => {
-      if (snap.exists()) {
-        onChange(snap.data().sessions);
-      } else {
-        const seed = buildSeedSessions();
-        await setDoc(scheduleDocRef, { sessions: seed });
-        // onSnapshot triggers again automatically once the write completes
-      }
+    (snap) => {
+      onChange(snap.exists() ? snap.data().sessions : null);
     },
     (error) => {
       console.error("Schedule sync error:", error);
       onError?.(error);
     }
   );
+}
+
+export async function ensureSeeded() {
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(scheduleDocRef);
+    if (!snap.exists()) {
+      tx.set(scheduleDocRef, { sessions: buildSeedSessions() });
+    }
+  });
 }
 
 export async function saveSessions(sessions) {

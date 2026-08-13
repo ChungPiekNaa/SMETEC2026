@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { subscribe, saveSessions, subscribeNotice, saveNotice } from "../lib/scheduleStore";
+import { subscribe, saveSessions, subscribeNotice, saveNotice, ensureSeeded } from "../lib/scheduleStore";
 import { STATUS, COLORS, GRADIENT, PILL_SHADOW, CARD_SHADOW_LG } from "../scheduleData";
 import ScheduleGrid from "../components/ScheduleGrid";
 import PageHeader from "../components/PageHeader";
@@ -40,6 +40,10 @@ export default function AdminPage() {
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    ensureSeeded().catch((e) => console.error("Failed to seed schedule:", e));
   }, []);
 
   useEffect(() => {
