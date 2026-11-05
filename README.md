@@ -1,30 +1,9 @@
-# SMETEC 2026 Schedule Board
+# SMETEC 2026
 
-Two separate routes:
+A web-based event management system developed for SMETEC 2026 to display the event schedule, manage live session statuses and facilitate food coupon redemption.
 
-- `/` — public, read-only schedule. No editing controls exist on this page at all.
-- `/admin` — admin-only page where clicking a session cycles its status
-  (Upcoming → Now → Ended).
+## Features
 
-Now backed by **Firebase Firestore**, so every attendee — on any device,
-any browser, anywhere — sees status changes the instant the admin makes
-them. No polling, no refresh needed.
-
-
-## Folder structure
-
-```
-src/
-  scheduleData.js          seed data + shared constants (tracks, colors, tags)
-  lib/
-    firebase.js             Firebase app + Firestore init
-    scheduleStore.js        storage layer - subscribe/save/reset, Firestore-backed
-  components/
-    ScheduleGrid.jsx        shared table renderer (no admin logic)
-    LegendPanel.jsx          legend + status key
-  pages/
-    PublicPage.jsx           "/" — read only
-    AdminPage.jsx             "/admin" — click to change status
-  App.jsx                    routes
-  main.jsx                   entry point
-```
+- **Public Page (`/`)** – Displays the event schedule and session statuses in read-only mode.
+- **Admin Page (`/admin`)** – Allows admins to update session statuses (Upcoming, Now, Ended).
+- **Redeem Page (`/redeem`)** – Scans QR codes or accepts manual coupon IDs to redeem breakfast and lunch coupons.
